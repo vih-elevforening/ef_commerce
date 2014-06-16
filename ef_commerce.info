@@ -1,0 +1,6 @@
+name = EF Commerce
+description = Provides basic configuation and dependencies for Commerce integration
+core = 7.x
+
+dependencies = commerce_order
+dependencies = commerce_checkout
