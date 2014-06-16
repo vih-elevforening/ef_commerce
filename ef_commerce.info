@@ -1,6 +1,19 @@
 name = EF Commerce
 description = Provides basic configuation and dependencies for Commerce integration
 core = 7.x
-
-dependencies = commerce_order
-dependencies = commerce_checkout
+package = EF
+dependencies[] = commerce_product
+dependencies[] = commerce_order
+dependencies[] = commerce_checkout
+dependencies[] = commerce_checkout_progress
+dependencies[] = commerce_addressbook
+dependencies[] = commerce_autosku
+dependencies[] = commerce_backoffice
+dependencies[] = commerce_features
+dependencies[] = commerce_google_analytics
+dependencies[] = commerce_message
+dependencies[] = inline_entity_form
+dependencies[] = quickpay
+dependencies[] = commerce_product_ui
+dependencies[] = commerce_line_item_ui
+dependencies[] = commerce_order_ui
