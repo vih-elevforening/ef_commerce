@@ -29,5 +29,23 @@ function ef_commerce_user_default_permissions() {
     'module' => 'commerce_checkout',
   );
 
+  // Exported permission: 'administer commerce_stock settings'.
+  $permissions['administer commerce_stock settings'] = array(
+    'name' => 'administer commerce_stock settings',
+    'roles' => array(
+      'administrator' => 'administrator',
+    ),
+    'module' => 'commerce_stock',
+  );
+
+  // Exported permission: 'make rule based changes to commerce_stock'.
+  $permissions['make rule based changes to commerce_stock'] = array(
+    'name' => 'make rule based changes to commerce_stock',
+    'roles' => array(
+      'administrator' => 'administrator',
+    ),
+    'module' => 'commerce_stock',
+  );
+
   return $permissions;
 }
