@@ -1,4 +1,10 @@
 <?php
+/**
+ * @file
+ * Code for the EF Commerce feature.
+ */
+
+include_once 'ef_commerce.features.inc';
 
 /**
  * @file
@@ -9,9 +15,61 @@
  * Implements hook_commerce_checkout_pane_info_alter().
  */
 function ef_commerce_commerce_checkout_pane_info_alter(&$checkout_panes) {
+  // Move the donate pane
   $checkout_panes['checkout_donate']['page'] = 'registration';
   $checkout_panes['checkout_donate']['title'] = t('Donate');
   $checkout_panes['checkout_donate']['weight'] = -19;
   $checkout_panes['checkout_donate']['enabled'] = TRUE;
+  // Billing
+  $checkout_panes['customer_profile_billing']['page'] = 'disabled';
+  $checkout_panes['customer_profile_billing']['enabled'] = FALSE;
+  // Account info
+  // Move Review
   $checkout_panes['checkout_review']['enabled'] = FALSE;
+  $checkout_panes['checkout_review']['page'] = 'disabled';
+}
+
+function ef_commerce_form_commerce_checkout_form_alter(&$form, &$form_state, $form_id) {
+  if (isset($form['account'])) {
+    // Create wrapper
+    $order_wrapper = entity_metadata_wrapper('commerce_order', $form_state['order']);
+
+    // Load up addressfield
+    $commerce_customer_address = $order_wrapper->commerce_customer_billing->commerce_customer_address->value();
+    $addressfield_handlers = array('address');
+    $addressfield_context = array(
+      'mode' => 'render',
+    );
+    $addressfield_render = addressfield_generate($commerce_customer_address, $addressfield_handlers, $addressfield_context);
+
+    // For some reason couldn't get the title to set if I set the $addressfield_render
+    // as the rendered item.
+    $form['account']['billing'] = array(
+      '#type' => 'item',
+      '#title' => t('Address'),
+      '#markup' => drupal_render($addressfield_render),
+    );
+  }
+}
+
+/**
+ * Implements.
+ */
+function ef_commerce_commerce_order_insert($order) {
+  // Reload, we do not want stale (just in case.)
+  $order = commerce_order_load($order->order_id);
+  $order_wrapper = entity_metadata_wrapper('commerce_order', $order);
+
+  if (!$order_wrapper->commerce_customer_billing->value()) {
+    $query = new EntityFieldQuery();
+    $query->entityCondition('entity_type', 'commerce_customer_profile')
+      ->propertyCondition('type', 'billing')
+      ->propertyCondition('uid', $order->uid)
+      ->propertyCondition('status', 1);
+    $result = $query->execute();
+    $commerce_customer_profile = reset($result['commerce_customer_profile']);
+    // Set the field reference.
+    $order_wrapper->commerce_customer_billing->set($commerce_customer_profile->profile_id);
+    $order_wrapper->save();
+  }
 }
