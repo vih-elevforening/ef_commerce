@@ -16,8 +16,7 @@ include_once 'ef_commerce.features.inc';
  */
 function ef_commerce_commerce_checkout_pane_info_alter(&$checkout_panes) {
   // Move the donate pane
-  $checkout_panes['checkout_donate']['page'] = 'registration';
-  $checkout_panes['checkout_donate']['title'] = t('Donate');
+  $checkout_panes['checkout_donate']['page'] = 'checkout';
   $checkout_panes['checkout_donate']['weight'] = -19;
   $checkout_panes['checkout_donate']['enabled'] = TRUE;
   // Account
