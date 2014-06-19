@@ -55,7 +55,7 @@ function ef_commerce_form_commerce_checkout_form_alter(&$form, &$form_state, $fo
 }
 
 /**
- * Implements.
+ * Implements hook_commerce_order_insert().
  */
 function ef_commerce_commerce_order_insert($order) {
   // Reload, we do not want stale (just in case.)
@@ -69,9 +69,11 @@ function ef_commerce_commerce_order_insert($order) {
       ->propertyCondition('uid', $order->uid)
       ->propertyCondition('status', 1);
     $result = $query->execute();
-    $commerce_customer_profile = reset($result['commerce_customer_profile']);
-    // Set the field reference.
-    $order_wrapper->commerce_customer_billing->set($commerce_customer_profile->profile_id);
-    $order_wrapper->save();
+    if (isset($result['commerce_customer_profile'])) {
+      $commerce_customer_profile = reset($result['commerce_customer_profile']);
+      // Set the field reference.
+      $order_wrapper->commerce_customer_billing->set($commerce_customer_profile->profile_id);
+      $order_wrapper->save();
+    }
   }
 }
