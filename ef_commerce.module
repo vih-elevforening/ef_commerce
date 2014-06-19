@@ -20,12 +20,12 @@ function ef_commerce_commerce_checkout_pane_info_alter(&$checkout_panes) {
   $checkout_panes['checkout_donate']['weight'] = -19;
   $checkout_panes['checkout_donate']['enabled'] = TRUE;
   // Account
-  $checkout_panes['account']['page'] = 'disabled';
-  $checkout_panes['account']['enabled'] = FALSE;
+  $checkout_panes['account']['page'] = 'checkout';
+  $checkout_panes['account']['enabled'] = TRUE;
   // Billing
   $checkout_panes['customer_profile_billing']['page'] = 'disabled';
   $checkout_panes['customer_profile_billing']['enabled'] = FALSE;
-  // Account info
+
   // Move Review
   $checkout_panes['checkout_review']['enabled'] = FALSE;
   $checkout_panes['checkout_review']['page'] = 'disabled';
@@ -33,24 +33,47 @@ function ef_commerce_commerce_checkout_pane_info_alter(&$checkout_panes) {
 
 function ef_commerce_form_commerce_checkout_form_alter(&$form, &$form_state, $form_id) {
   if (isset($form['account'])) {
+    $pane_alter = TRUE;
     // Create wrapper
     $order_wrapper = entity_metadata_wrapper('commerce_order', $form_state['order']);
 
-    // Load up addressfield
-    $commerce_customer_address = $order_wrapper->commerce_customer_billing->commerce_customer_address->value();
-    $addressfield_handlers = array('address');
-    $addressfield_context = array(
-      'mode' => 'render',
-    );
-    $addressfield_render = addressfield_generate($commerce_customer_address, $addressfield_handlers, $addressfield_context);
+    // Check if the order's billing profile has been attached.
+    if (!$order_wrapper->commerce_customer_billing->value()) {
+      $stop = $order_wrapper->uid->value();
+      $customer_profile = _ef_users_get_customer_profile(user_load($order_wrapper->uid->value()));
 
-    // For some reason couldn't get the title to set if I set the $addressfield_render
-    // as the rendered item.
-    $form['account']['billing'] = array(
-      '#type' => 'item',
-      '#title' => t('Address'),
-      '#markup' => drupal_render($addressfield_render),
-    );
+      // If a profile was returned, set it.
+      if ($customer_profile) {
+        $order_wrapper->commerce_customer_billing->set($customer_profile->profile_id);
+        $order_wrapper->save();
+      }
+      // No profile returned, throw notice
+      else {
+        drupal_set_message(t('You must enter your address in your profile to continue.'), 'warning');
+        $form['buttons']['continue']['#disabled'] = TRUE;
+        $pane_alter = FALSE;
+      }
+    }
+
+    // If we're good to alter, do it.
+    if ($pane_alter) {
+      // Load up addressfield
+      $commerce_customer_address = $order_wrapper->commerce_customer_billing->commerce_customer_address->value();
+
+      $addressfield_handlers = array('address');
+      $addressfield_context = array(
+        'mode' => 'render',
+      );
+      $addressfield_render = addressfield_generate($commerce_customer_address, $addressfield_handlers, $addressfield_context);
+
+      // For some reason couldn't get the title to set if I set the $addressfield_render
+      // as the rendered item.
+      $form['account']['billing'] = array(
+        '#type' => 'item',
+        '#title' => t('Address'),
+        '#markup' => drupal_render($addressfield_render),
+      );
+    }
   }
 }
 
@@ -63,17 +86,17 @@ function ef_commerce_commerce_order_insert($order) {
   $order_wrapper = entity_metadata_wrapper('commerce_order', $order);
 
   if (!$order_wrapper->commerce_customer_billing->value()) {
-    $query = new EntityFieldQuery();
-    $query->entityCondition('entity_type', 'commerce_customer_profile')
-      ->propertyCondition('type', 'billing')
-      ->propertyCondition('uid', $order->uid)
-      ->propertyCondition('status', 1);
-    $result = $query->execute();
-    if (isset($result['commerce_customer_profile'])) {
-      $commerce_customer_profile = reset($result['commerce_customer_profile']);
+    // Attach the user's profile to the order
+    $commerce_customer_profile = _ef_users_get_customer_profile($order_wrapper->uid->value());
+    // Verify it exists
+    if ($commerce_customer_profile) {
       // Set the field reference.
       $order_wrapper->commerce_customer_billing->set($commerce_customer_profile->profile_id);
       $order_wrapper->save();
+    }
+    // If it doesn't exist, let user know they need to save their profile.
+    else {
+      drupal_set_message(t('You have not yet filled out your address in your profile. In order to complete checkout, you must enter this information'), 'warning');
     }
   }
 }
