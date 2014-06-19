@@ -12,7 +12,6 @@ dependencies[] = commerce_donate
 dependencies[] = commerce_features
 dependencies[] = commerce_google_analytics
 dependencies[] = commerce_line_item_ui
-dependencies[] = commerce_message
 dependencies[] = commerce_order
 dependencies[] = commerce_order_ui
 dependencies[] = commerce_product
