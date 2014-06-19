@@ -20,6 +20,7 @@ dependencies[] = commerce_product_ui
 dependencies[] = commerce_ssr
 dependencies[] = commerce_stock
 dependencies[] = ctools
+dependencies[] = ef_users
 dependencies[] = features
 dependencies[] = inline_entity_form
 dependencies[] = list

@@ -20,6 +20,9 @@ function ef_commerce_commerce_checkout_pane_info_alter(&$checkout_panes) {
   $checkout_panes['checkout_donate']['title'] = t('Donate');
   $checkout_panes['checkout_donate']['weight'] = -19;
   $checkout_panes['checkout_donate']['enabled'] = TRUE;
+  // Account
+  $checkout_panes['account']['page'] = 'disabled';
+  $checkout_panes['account']['enabled'] = FALSE;
   // Billing
   $checkout_panes['customer_profile_billing']['page'] = 'disabled';
   $checkout_panes['customer_profile_billing']['enabled'] = FALSE;
