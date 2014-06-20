@@ -17,7 +17,7 @@ include_once 'ef_commerce.features.inc';
 function ef_commerce_commerce_checkout_pane_info_alter(&$checkout_panes) {
   // Move the donate pane
   $checkout_panes['checkout_donate']['page'] = 'checkout';
-  $checkout_panes['checkout_donate']['weight'] = -19;
+  $checkout_panes['checkout_donate']['weight'] = 20;
   $checkout_panes['checkout_donate']['enabled'] = TRUE;
   // Account
   $checkout_panes['account']['page'] = 'checkout';
@@ -39,7 +39,6 @@ function ef_commerce_form_commerce_checkout_form_alter(&$form, &$form_state, $fo
 
     // Check if the order's billing profile has been attached.
     if (!$order_wrapper->commerce_customer_billing->value()) {
-      $stop = $order_wrapper->uid->value();
       $customer_profile = _ef_users_get_customer_profile(user_load($order_wrapper->uid->value()));
 
       // If a profile was returned, set it.
