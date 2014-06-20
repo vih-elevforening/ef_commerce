@@ -4,3 +4,11 @@
  * @file
  * Install, uninstall, and update functions for the module.
  */
+
+/**
+ * Enable Commerce Billy.
+ */
+function ef_commerce_update_7001() {
+  module_enable(array('commerce_billy', 'commerce_billy_pdf'));
+  variable_set('commerce_billy_auto_invoice', 1);
+}
