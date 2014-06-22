@@ -64,7 +64,7 @@ function ef_commerce_form_commerce_checkout_form_alter(&$form, &$form_state, $fo
       }
       // No profile returned, throw notice
       else {
-        drupal_set_message(t('You must enter your address in your profile to continue.'), 'warning');
+        drupal_set_message(t('You must enter your address in your !link to continue.', array('!link' => l(t('profile'), 'user/' . $order_wrapper->uid->value() . '/edit-profile'))), 'warning');
         $form['buttons']['continue']['#disabled'] = TRUE;
         $pane_alter = FALSE;
       }
@@ -111,7 +111,7 @@ function ef_commerce_commerce_order_insert($order) {
     }
     // If it doesn't exist, let user know they need to save their profile.
     else {
-      drupal_set_message(t('You have not yet filled out your address in your profile. In order to complete checkout, you must enter this information'), 'warning');
+      drupal_set_message(t('You have not yet filled out your address in your !link.', array('!link' => l(t('profile'), 'user/' . $order_wrapper->uid->value() . '/edit-profile'))), 'warning');
     }
   }
 }
