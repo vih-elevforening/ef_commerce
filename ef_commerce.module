@@ -102,7 +102,7 @@ function ef_commerce_commerce_order_insert($order) {
 
   if (!$order_wrapper->commerce_customer_billing->value()) {
     // Attach the user's profile to the order
-    $commerce_customer_profile = _ef_users_get_customer_profile($order_wrapper->uid->value());
+    $commerce_customer_profile = _ef_users_get_customer_profile(user_load($order_wrapper->uid->value()));
     // Verify it exists
     if ($commerce_customer_profile) {
       // Set the field reference.
