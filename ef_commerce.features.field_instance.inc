@@ -83,7 +83,7 @@ function ef_commerce_field_default_field_instances() {
     ),
     'default_value' => NULL,
     'deleted' => 0,
-    'description' => 'Bliv medlem af fonden ved at skrive dit CPR-nummer. Nummeret sendes krypteret og opbevares på en sikker server.',
+    'description' => 'Get membership by writing your social security number. The number will be sent encrypted and is stored on a secured server.',
     'display' => array(
       'default' => array(
         'label' => 'above',
@@ -95,7 +95,7 @@ function ef_commerce_field_default_field_instances() {
     ),
     'entity_type' => 'commerce_line_item',
     'field_name' => 'field_cpr_number',
-    'label' => 'CPR-number',
+    'label' => 'Get membership of our fund',
     'required' => 0,
     'settings' => array(
       'text_processing' => 0,
@@ -115,8 +115,8 @@ function ef_commerce_field_default_field_instances() {
   // Translatables
   // Included for use with string extractors like potx.
   t('Address');
-  t('Bliv medlem af fonden ved at skrive dit CPR-nummer. Nummeret sendes krypteret og opbevares på en sikker server.');
-  t('CPR-number');
+  t('Get membership by writing your social security number. The number will be sent encrypted and is stored on a secured server.');
+  t('Get membership of our fund');
 
   return $field_instances;
 }
