@@ -135,6 +135,9 @@ function ef_commerce_commerce_checkout_complete($order) {
       'order' => $order,
       'transaction' => $transaction,
       'payment_method' => commerce_payment_method_instance_load($order->data['payment_method']),
+      'values' => array(
+        'finalize' => 1,
+      ),
     );
 
     $qp = new Quickpay($form_state_stub['payment_method']['settings']);
