@@ -65,6 +65,7 @@ function ef_commerce_field_default_field_instances() {
       'module' => 'addressfield',
       'settings' => array(
         'available_countries' => array(),
+        'default_country' => '',
         'format_handlers' => array(
           0 => 'address',
           1 => 'name-oneline',
