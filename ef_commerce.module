@@ -19,12 +19,18 @@ function ef_commerce_commerce_checkout_pane_info_alter(&$checkout_panes) {
   $cpr_number = FALSE;
   $order = commerce_cart_order_load($user->uid);
   if (!empty($order)) {
+    /** @var EntityDrupalWrapper $order_wrapper */
     $order_wrapper = entity_metadata_wrapper('commerce_order', $order);
-    foreach ($order_wrapper->commerce_line_items as $item) {
-      if (empty($item->field_cpr_number)) {
-        continue;
+    try {
+      /** @var EntityDrupalWrapper $item */
+      foreach ($order_wrapper->{'commerce_line_items'} as $item) {
+        if (empty($item->field_cpr_number)) {
+          continue;
+        }
+        $cpr_number = $item->field_cpr_number->value();
       }
-      $cpr_number = $item->field_cpr_number->value();
+    } catch (EntityMetadataWrapperException $e) {
+      // Do nothing.
     }
   }
 
@@ -54,15 +60,16 @@ function ef_commerce_form_commerce_checkout_form_alter(&$form, &$form_state, $fo
   if (isset($form['account'])) {
     $pane_alter = TRUE;
     // Create wrapper
+    /** @var EntityDrupalWrapper $order_wrapper */
     $order_wrapper = entity_metadata_wrapper('commerce_order', $form_state['order']);
 
     // Check if the order's billing profile has been attached.
-    if (!$order_wrapper->commerce_customer_billing->value()) {
+    if (!$order_wrapper->{'commerce_customer_billing'}->value()) {
       $customer_profile = _ef_users_get_customer_profile(user_load($order_wrapper->uid->value()));
 
       // If a profile was returned, set it.
       if ($customer_profile) {
-        $order_wrapper->commerce_customer_billing->set($customer_profile->profile_id);
+        $order_wrapper->{'commerce_customer_billing'}->set($customer_profile->profile_id);
         $order_wrapper->save();
       }
       // No profile returned, throw notice
@@ -90,6 +97,18 @@ function ef_commerce_form_commerce_checkout_form_alter(&$form, &$form_state, $fo
         '#type' => 'item',
         '#title' => t('Address'),
         '#markup' => drupal_render($addressfield_render),
+      );
+
+      $form['account']['edit_account'] = array(
+        '#type' => 'item',
+        '#title' => '',
+        '#markup' => l(
+          t('Edit my contact information'),
+          'user/' . $order_wrapper->uid->value() . '/edit-profile',
+          array(
+            'query' => array('destination' => request_path())
+          )
+        ),
       );
     }
   }
