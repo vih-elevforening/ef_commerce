@@ -15,43 +15,20 @@ include_once 'ef_commerce.features.inc';
  * Implements hook_commerce_checkout_pane_info_alter().
  */
 function ef_commerce_commerce_checkout_pane_info_alter(&$checkout_panes) {
-  global $user;
-  $cpr_number = FALSE;
-  $order = commerce_cart_order_load($user->uid);
-  if (!empty($order)) {
-    /** @var EntityDrupalWrapper $order_wrapper */
-    $order_wrapper = entity_metadata_wrapper('commerce_order', $order);
-    try {
-      /** @var EntityDrupalWrapper $item */
-      foreach ($order_wrapper->{'commerce_line_items'} as $item) {
-        if (empty($item->field_cpr_number)) {
-          continue;
-        }
-        $cpr_number = $item->field_cpr_number->value();
-      }
-    } catch (EntityMetadataWrapperException $e) {
-      // Do nothing.
-    }
-  }
+  // Donation pane.
+  $checkout_panes['checkout_donate']['page'] = 'checkout';
+  $checkout_panes['checkout_donate']['weight'] = 20;
+  $checkout_panes['checkout_donate']['enabled'] = TRUE;
 
-  // Move the donate pane
-  if ($cpr_number) {
-    $checkout_panes['checkout_donate']['page'] = 'checkout';
-    $checkout_panes['checkout_donate']['weight'] = 20;
-    $checkout_panes['checkout_donate']['enabled'] = TRUE;
-  }
-  else {
-    $checkout_panes['checkout_donate']['page'] = 'disabled';
-    $checkout_panes['checkout_donate']['enabled'] = FALSE;
-  }
-  // Account
+  // Account.
   $checkout_panes['account']['page'] = 'checkout';
   $checkout_panes['account']['enabled'] = TRUE;
-  // Billing
+
+  // Billing.
   $checkout_panes['customer_profile_billing']['page'] = 'disabled';
   $checkout_panes['customer_profile_billing']['enabled'] = FALSE;
 
-  // Move Review
+  // Move Review.
   $checkout_panes['checkout_review']['enabled'] = FALSE;
   $checkout_panes['checkout_review']['page'] = 'disabled';
 }

@@ -80,7 +80,7 @@ function ef_commerce_field_default_field_instances() {
   $field_instances['commerce_line_item-product-field_cpr_number'] = array(
     'bundle' => 'product',
     'commerce_cart_settings' => array(
-      'field_access' => 1,
+      'field_access' => 0,
     ),
     'default_value' => NULL,
     'deleted' => 0,
