@@ -19,7 +19,6 @@ function ef_commerce_field_default_field_bases() {
       0 => 'commerce_product',
     ),
     'field_name' => 'commerce_stock',
-    'foreign keys' => array(),
     'indexes' => array(),
     'locked' => 0,
     'module' => 'number',
@@ -41,7 +40,6 @@ function ef_commerce_field_default_field_bases() {
       0 => 'commerce_product',
     ),
     'field_name' => 'commerce_stock_override',
-    'foreign keys' => array(),
     'indexes' => array(
       'value' => array(
         0 => 'value',
@@ -67,7 +65,6 @@ function ef_commerce_field_default_field_bases() {
     'deleted' => 0,
     'entity_types' => array(),
     'field_name' => 'field_cpr_number',
-    'foreign keys' => array(),
     'indexes' => array(
       'format' => array(
         0 => 'format',
