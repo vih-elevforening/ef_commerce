@@ -33,6 +33,9 @@ function ef_commerce_commerce_checkout_pane_info_alter(&$checkout_panes) {
   $checkout_panes['checkout_review']['page'] = 'disabled';
 }
 
+/**
+ * Implements hook_form_commerce_checkout_form_alter().
+ */
 function ef_commerce_form_commerce_checkout_form_alter(&$form, &$form_state, $form_id) {
   // Create wrapper
   /** @var EntityDrupalWrapper $order_wrapper */
@@ -155,6 +158,9 @@ function ef_commerce_commerce_order_insert($order) {
   }
 }
 
+/**
+ * Implements hook_commerce_checkout_complete().
+ */
 function ef_commerce_commerce_checkout_complete($order) {
   // Order has a payment method, and is QuickPay for automatic captures.
   if (isset($order->data['payment_method']) && $order->data['payment_method'] == 'quickpay|commerce_payment_quickpay') {
