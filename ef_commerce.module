@@ -8,7 +8,7 @@ include_once 'ef_commerce.features.inc';
 
 /**
  * @file
- * Module file for EF Commerce
+ * Module file for EF Commerce.
  */
 
 /**
@@ -34,11 +34,12 @@ function ef_commerce_commerce_checkout_pane_info_alter(&$checkout_panes) {
 }
 
 function ef_commerce_form_commerce_checkout_form_alter(&$form, &$form_state, $form_id) {
+  // Create wrapper
+  /** @var EntityDrupalWrapper $order_wrapper */
+  $order_wrapper = entity_metadata_wrapper('commerce_order', $form_state['order']);
+
   if (isset($form['account'])) {
     $pane_alter = TRUE;
-    // Create wrapper
-    /** @var EntityDrupalWrapper $order_wrapper */
-    $order_wrapper = entity_metadata_wrapper('commerce_order', $form_state['order']);
 
     // Check if the order's billing profile has been attached.
     if (!$order_wrapper->{'commerce_customer_billing'}->value()) {
@@ -89,6 +90,45 @@ function ef_commerce_form_commerce_checkout_form_alter(&$form, &$form_state, $fo
       );
     }
   }
+  if (isset($form['checkout_donate'])) {
+    $user_wrapper = entity_metadata_wrapper('user', $order_wrapper->uid->value());
+
+    $form['checkout_donate']['cpr_number'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Get membership of our fund'),
+      '#description' => t('Get membership by writing your social security number. The number will be sent encrypted and is stored on a secured server.'),
+      '#default_value' => '',
+      '#weight' => 50,
+    );
+
+    try {
+      $form['checkout_donate']['cpr_number']['#default_value'] = $user_wrapper->field_cpr_number->value();
+    }
+    catch (EntityMetadataWrapperException $e) {
+      // Nothing.
+    }
+    $form['buttons']['continue']['#submit'][] = 'ef_commerce_checkout_save_cpr_number';
+  }
+}
+
+/**
+ * Submit callback to save CPR number to user.
+ *
+ * @param $form
+ * @param $form_state
+ */
+function ef_commerce_checkout_save_cpr_number($form, &$form_state) {
+  if ($form_state['values']['checkout_donate']['cpr_number']) {
+    /** @var EntityDrupalWrapper $user_wrapper */
+    $user_wrapper = entity_metadata_wrapper('user', $form_state['order']->uid);
+    try {
+      $user_wrapper->field_cpr_number = $form_state['values']['checkout_donate']['cpr_number'];
+      $user_wrapper->save();
+    }
+    catch (EntityMetadataWrapperException $e) {
+      // Nothing.
+    }
+  }
 }
 
 /**
@@ -126,7 +166,7 @@ function ef_commerce_commerce_checkout_complete($order) {
       return FALSE;
     }
 
-    // Sub out a few things so we can invoke existing methods
+    // Sub out a few things so we can invoke existing methods.
     $form_state_stub = array(
       'order' => $order,
       'transaction' => $transaction,
@@ -156,5 +196,15 @@ function ef_commerce_commerce_checkout_complete($order) {
     $form_state_stub['values']['amount'] = $default_amount;
 
     commerce_quickpay_transaction_capture_form_submit(array(), $form_state_stub);
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function ef_commerce_form_edit_profile_user_profile_form_alter(&$form, &$form_state, $form_id) {
+  if (isset($form['field_cpr_number'])) {
+    // @note: At any point should this be viewable and editable by someone?
+    $form['field_cpr_number']['#access'] = user_access('administer modules');
   }
 }
