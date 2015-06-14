@@ -85,7 +85,7 @@ function ef_commerce_field_default_field_instances() {
     ),
     'default_value' => NULL,
     'deleted' => 0,
-    'description' => 'Get membership by writing your social security number. The number will be sent encrypted and is stored on a secured server.',
+    'description' => 'Needed if you want tax deduction for your contribution. The number will be sent encrypted and is stored on a secured server.',
     'display' => array(
       'default' => array(
         'label' => 'above',
@@ -97,7 +97,7 @@ function ef_commerce_field_default_field_instances() {
     ),
     'entity_type' => 'commerce_line_item',
     'field_name' => 'field_cpr_number',
-    'label' => 'Get membership of our fund',
+    'label' => 'CPR-nummer',
     'required' => 0,
     'settings' => array(
       'text_processing' => 0,
