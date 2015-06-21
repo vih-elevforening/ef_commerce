@@ -202,6 +202,9 @@ function ef_commerce_commerce_checkout_complete($order) {
     $form_state_stub['values']['amount'] = $default_amount;
 
     commerce_quickpay_transaction_capture_form_submit(array(), $form_state_stub);
+
+    // It's safe to mark the order completed here.
+    commerce_order_status_update($order, 'completed');
   }
 }
 
@@ -212,5 +215,14 @@ function ef_commerce_form_edit_profile_user_profile_form_alter(&$form, &$form_st
   if (isset($form['field_cpr_number'])) {
     // @note: At any point should this be viewable and editable by someone?
     $form['field_cpr_number']['#access'] = user_access('administer modules');
+  }
+}
+
+/**
+ * Implements hook_default_rules_configuration_alter().
+ */
+function ef_commerce_default_rules_configuration_alter(&$data) {
+  if (isset($data['commerce_checkout_order_status_update'])) {
+    $data['commerce_checkout_order_status_update']->active = FALSE;
   }
 }
