@@ -98,8 +98,8 @@ function ef_commerce_form_commerce_checkout_form_alter(&$form, &$form_state, $fo
 
     $form['checkout_donate']['cpr_number'] = array(
       '#type' => 'textfield',
-      '#title' => t('Get membership of our fund'),
-      '#description' => t('Get membership by writing your social security number. The number will be sent encrypted and is stored on a secured server.'),
+      '#title' => t('SSN-number'),
+      '#description' => t('If you want your donation to be eligible for a tax deduction, we need you SSN-number. The number will be sent encrypted and is stored on a secured server.'),
       '#default_value' => '',
       '#weight' => 50,
     );
